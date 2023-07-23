@@ -154,7 +154,7 @@ const Home = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4 px-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 px-4">
         {sums.map((sum, index) => {
           // remove spaces and seperate each sum by sign
           let updatedSums = sum
