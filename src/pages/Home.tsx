@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Volume2Icon } from "lucide-react";
+import { Volume2Icon, Check, XIcon } from "lucide-react";
 
 const Home = () => {
   const [noOfSumDigits, setNoOfSumDigits] = useState(6);
@@ -34,13 +34,17 @@ const Home = () => {
         if (j > 0) {
           sum += ` ${getRandomSign()} `;
         }
-        sum += generateRandomNumber(numberDigitLength);
-      }
 
-      // if sum is in negative get another sum else continue
-      if (eval(sum) < 0) {
-        i--;
-        continue;
+        const randomNumber = generateRandomNumber(numberDigitLength);
+
+        // if sum is in negative get another sum else continue
+        if (eval(sum + randomNumber) < 0) {
+          sum = "";
+          j = -1;
+          continue;
+        }
+
+        sum += randomNumber;
       }
 
       sumsArray.push(sum);
@@ -62,8 +66,24 @@ const Home = () => {
     speechSynthesis.speak(utterance);
   };
 
+  const playRightAnswer = () => {
+    const utterance = new SpeechSynthesisUtterance("Correct Answer");
+    utterance.rate = voiceRate;
+    utterance.lang = "en-US";
+
+    speechSynthesis.speak(utterance);
+  };
+
+  const playWrongAnswer = () => {
+    const utterance = new SpeechSynthesisUtterance("Wrong Answer");
+    utterance.rate = voiceRate;
+    utterance.lang = "en-US";
+
+    speechSynthesis.speak(utterance);
+  };
+
   return (
-    <div className="flex flex-col bg-gray-900 min-h-screen py-4 gap-8">
+    <div className="flex flex-col bg-gray-900 min-h-screen py-4 gap-10">
       <h1 className="text-2xl font-bold text-white text-center">
         Farhan Sum Asker
       </h1>
@@ -142,7 +162,7 @@ const Home = () => {
           />
         </div>
 
-        <div className="flex flex-col w-full gap-2 col-span-2">
+        <div className="flex flex-col w-full gap-2 ">
           <Label htmlFor="sums" className="text-white">
             ‎
           </Label>
@@ -153,8 +173,22 @@ const Home = () => {
             Calculate
           </Button>
         </div>
+
+        <div className="flex flex-col w-full gap-2 ">
+          <Label htmlFor="stop" className="text-white">
+            ‎
+          </Label>
+          <Button
+            onClick={() => {
+              speechSynthesis.cancel();
+            }}
+            className="w-full bg-red-950 text-white hover:bg-red-700"
+          >
+            Stop
+          </Button>
+        </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 px-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8 px-4">
         {sums.map((sum, index) => {
           // remove spaces and seperate each sum by sign
           let updatedSums = sum
@@ -205,6 +239,22 @@ const Home = () => {
                 title="Speak out sum"
               >
                 <Volume2Icon size={24} className="text-slate-950" />
+              </div>
+
+              <div
+                className="absolute -top-2  -left-2  p-2 bg-green-400 rounded-full cursor-pointer hover:bg-green-500 transition-all"
+                title="Correct Answer"
+                onClick={playRightAnswer}
+              >
+                <Check size={24} className="text-white" />
+              </div>
+
+              <div
+                className="absolute -top-8 p-2 bg-red-400 rounded-full cursor-pointer hover:bg-red-500 transition-all"
+                title="Wrong Answer"
+                onClick={playWrongAnswer}
+              >
+                <XIcon size={24} className="text-white" />
               </div>
             </div>
           );
